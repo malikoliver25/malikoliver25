@@ -1,0 +1,65 @@
+name: Generate Pacman
+on:
+  schedule:
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: abozanona/pacman-contribution-graph@main
+        with:
+          github_user_name: malikoliver25
+      - name: Simulate random run — WIN or LOSE then RESTART
+        run: |
+          set -e
+          SVG="dist/pacman-contribution-graph.svg"
+          DARK="dist/pacman-contribution-graph-dark.svg"
+          ls -la dist/ || mkdir -p dist
+          ROLL=$((RANDOM % 2))
+          inject_outcome() {
+            local file="$1" outcome="$2"
+            local banner_text banner_color
+            if [ "$outcome" = "WIN" ]; then
+              banner_text="★ WIN — LEVEL CLEAR! RESTARTING... ★"
+              banner_color="#FFED00"
+              sed -i 's/#FF0000/#2121FF/g; s/#FFB8DE/#2121FF/g; s/#00FFFF/#2121FF/g; s/#FFB852/#2121FF/g' "$file" || true
+            else
+              banner_text="☠ GAME OVER — GHOSTS WIN! RESTARTING... ☠"
+              banner_color="#FF0000"
+              sed -i 's/#FFED00/#FFA500/g' "$file" || true
+            fi
+            python3 - <<PY "$file" "$banner_text" "$banner_color"
+          import sys, pathlib
+          path, text, color = sys.argv[1], sys.argv[2], sys.argv[3]
+          svg = pathlib.Path(path).read_text()
+          banner = f'<g id="random-outcome"><rect x="10" y="95%" width="98%" height="22" rx="6" fill="#0f172a" stroke="{color}" stroke-width="1.2"/><text x="50%" y="97.5%" dominant-baseline="middle" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700" fill="{color}">{text}</text></g></svg>'
+          svg = svg.replace('</svg>', banner)
+          pathlib.Path(path).write_text(svg)
+          print(f"Injected {text} into {path}")
+          PY
+          }
+          if [ -f "$SVG" ]; then
+            if [ "$ROLL" -eq 0 ]; then inject_outcome "$SVG" "WIN"; else inject_outcome "$SVG" "LOSE"; fi
+            if [ -f "$DARK" ]; then
+              ROLL_D=$((RANDOM % 2))
+              if [ "$ROLL_D" -eq 0 ]; then inject_outcome "$DARK" "WIN"; else inject_outcome "$DARK" "LOSE"; fi
+            fi
+          else
+            echo "No SVG at $SVG — listing dist:"
+            find dist -type f | head -20
+            exit 1
+          fi
+          echo "Random outcome roll: $ROLL (0=WIN,1=LOSE)"
+      - name: Commit to output branch
+        uses: crazy-max/ghaction-github-pages@v4
+        with:
+          target_branch: output
+          build_dir: dist
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
