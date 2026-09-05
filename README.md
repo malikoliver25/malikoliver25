@@ -12,22 +12,6 @@
   <img src="https://img.shields.io/badge/Class-QA%20Automation-e11d48?style=for-the-badge&logo=playwright&logoColor=white" />
 </p>
 
-```
-HP ██████████ 100%  ·  XP ████████░░ 80%  ·  Quests 22  ·  Languages 6
-```
-
-<!-- STATS: vercelapp + demolab; if rate-limited shows placeholder -->
-<table><tr>
-  <td><img src="https://github-readme-stats.vercel.app/api?username=malikoliver25&show_icons=true&theme=tokyonight&bg_color=0f172a&title_color=38bdf8&icon_color=38bdf8&text_color=cbd5e1&hide_border=true&include_all_commits=true&count_private=true" alt="github stats" /></td>
-  <td><img src="https://github-readme-stats.vercel.app/api/top-langs/?username=malikoliver25&layout=compact&theme=tokyonight&bg_color=0f172a&title_color=38bdf8&text_color=cbd5e1&hide_border=true" alt="top langs" /></td>
-</tr><tr>
-  <td colspan="2" align="center"><img src="https://streak-stats.demolab.com?user=malikoliver25&theme=tokyonight&background=0f172a&ring=38bdf8&fire=38bdf8&currStreakLabel=38bdf8" alt="streak" /></td>
-</tr></table>
-
-<p align="center"><img src="https://github-profile-trophy.vercel.app/?username=malikoliver25&theme=tokyonight&no-frame=true&no-bg=true&margin-w=6&column=7" alt="trophies" /></p>
-
-<p align="center"><img src="https://github-readme-activity-graph.vercel.app/graph?username=malikoliver25&theme=tokyo-night&bg_color=0f172a&color=38bdf8&line=38bdf8&point=cbd5e1&hide_border=true" alt="activity graph" /></p>
-
 ### 🎒 Inventory — Loadout
 
 <p align="center">
