@@ -57,8 +57,6 @@ HP ██████████ 100%  ·  XP ████████░░ 80
 
 > 💡 Tip: Click any quest card to enter the repo — commits are XP, PRs are boss fights.
 
-### 🟡 Pac-Man Quest — Random Runs (Win or Lose, Then Restart)
-
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/malikoliver25/malikoliver25/output/pacman-contribution-graph-dark.svg" />
@@ -67,7 +65,6 @@ HP ██████████ 100%  ·  XP ████████░░ 80
   </picture>
 </p>
 
-<p align="center"><em>👻 Blinky <code>#FF0000</code> · Pinky <code>#FFB8DE</code> · Inky <code>#00FFFF</code> · Clyde <code>#FFB852</code> — every 6 hours a new run: sometimes <code style="color:#FFED00">★ WIN</code>, sometimes <code style="color:#FF0000">☠ GAME OVER</code>, always <code>RESTARTING...</code></em></p>
 
 ---
 
