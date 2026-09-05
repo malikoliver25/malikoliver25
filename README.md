@@ -2,7 +2,7 @@
 
 [![Typing SVG](https://readme-typing-svg.demolab.com?font=JetBrains+Mono&size=22&pause=1000&color=38BDF8&center=true&vCenter=true&width=700&lines=Level+24+%7C+Backend+%2B+Cloud+Native+Engineer;QA+Automation+%7C+Playwright+%2B+Java+%2B+Python;AI+Portal+%2B+Security+Orchestration+Builder;Press+%E2%96%B6+to+explore+my+quests)](https://git.io/typing-svg)
 
-<p align="center"><em>Building reliable systems — event-driven backends, automated QA, and AI tooling. No game over, just next level.</em></p>
+<p align="center"><em>Building reliable systems — event-driven backends, automated QA, and AI tooling.</em></p>
 
 <p align="center"><b>🧙 PLAYER CARD</b></p>
 
