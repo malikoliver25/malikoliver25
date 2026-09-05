@@ -77,7 +77,7 @@ HP ██████████ 100%  ·  XP ████████░░ 80
 
 <p align="center">
   <a href="mailto:malikoliver220@gmail.com"><img src="https://img.shields.io/badge/Email-malikoliver220@gmail.com-EA4335?style=flat&logo=gmail&logoColor=white" alt="email" /></a>
-  <a href="https://linkedin.com/in/malikoliver25"><img src="https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=flat&logo=linkedin" alt="linkedin" /></a>
+  <a href="https://www.linkedin.com/in/malik-o-1b4359115/"><img src="https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=flat&logo=linkedin" alt="linkedin" /></a>
   <a href="https://malikoliver25.github.io/voidprotocol-labs/"><img src="https://img.shields.io/badge/Portfolio-voidprotocol--labs-38bdf8?style=flat&logo=vercel" alt="portfolio" /></a>
 </p>
 
