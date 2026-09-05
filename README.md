@@ -65,12 +65,7 @@ HP ██████████ 100%  ·  XP ████████░░ 80
   </picture>
 </p>
 
-
 ---
-
-<p align="center">
-  <img src="https://komarev.com/ghpvc/?username=malikoliver25&label=Visitors&color=38bdf8&style=flat" alt="visitors" />
-</p>
 
 <p align="center">
   <a href="mailto:malikoliver220@gmail.com"><img src="https://img.shields.io/badge/Email-malikoliver220@gmail.com-EA4335?style=flat&logo=gmail&logoColor=white" alt="email" /></a>
