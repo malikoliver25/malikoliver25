@@ -1,15 +1,15 @@
-![header](https://capsule-render.vercel.app/api?type=waving&color=0:0f172a,100:38bdf8&height=220&section=header&text=malikoliver25&fontSize=48&fontColor=ffffff&animation=fadeIn&desc=Player%20One%20%E2%80%94%20Cloud%20%E2%80%A2%20QA%20%E2%80%A2%20AI&descAlignY=60)
+![header](https://capsule-render.vercel.app/api?type=waving&color=0:0f172a,100:38bdf8&height=220&section=header&text=malikoliver25&fontSize=48&fontColor=ffffff&animation=fadeIn&desc=Backend%20%26%20AI%20Engineer%20%E2%80%94%20MLOps%20%26%20AI%20Infrastructure&descAlignY=60)
 
-[![Typing SVG](https://readme-typing-svg.demolab.com?font=JetBrains+Mono&size=22&pause=1000&color=38BDF8&center=true&vCenter=true&width=700&lines=Level+24+%7C+Backend+%2B+Cloud+Native+Engineer;QA+Automation+%7C+Playwright+%2B+Java+%2B+Python;AI+Portal+%2B+Security+Orchestration+Builder;Press+%E2%96%B6+to+explore+my+quests)](https://git.io/typing-svg)
+[![Typing SVG](https://readme-typing-svg.demolab.com?font=JetBrains+Mono&size=22&pause=1000&color=38BDF8&center=true&vCenter=true&width=700&lines=Backend%20%26%20AI%20Engineer%20%E2%80%94%20MLOps%20%26%20AI%20Infrastructure;Scalable%20AI%20systems%20%26%20backend%20platforms;Press%20%E2%96%B6%20to%20explore%20my%20quests)](https://git.io/typing-svg)
 
-<p align="center"><em>Building reliable systems — event-driven backends, automated QA, and AI tooling.</em></p>
+<p align="center"><em>Backend &amp; AI Engineer specializing in MLOps &amp; AI Infrastructure — building scalable, production-grade AI systems &amp; data platforms.</em></p>
 
 <p align="center"><b>🧙 PLAYER CARD</b></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Role-Backend%20Engineer-38bdf8?style=for-the-badge&logo=codeforces&logoColor=white" />
-  <img src="https://img.shields.io/badge/Spec-Cloud%20Native-0f172a?style=for-the-badge&logo=docker&logoColor=38bdf8" />
-  <img src="https://img.shields.io/badge/Class-QA%20Automation-e11d48?style=for-the-badge&logo=playwright&logoColor=white" />
+  <img src="https://img.shields.io/badge/Role-Backend%20%26%20AI%20Engineer-38bdf8?style=for-the-badge&logo=codeforces&logoColor=white" />
+  <img src="https://img.shields.io/badge/Spec-MLOps%20%26%20AI%20Infra-0f172a?style=for-the-badge&logo=tensorflow&logoColor=38bdf8" />
+  <img src="https://img.shields.io/badge/Focus-AI%20Infrastructure-e11d48?style=for-the-badge&logo=kubernetes&logoColor=white" />
 </p>
 
 ### 🎒 Inventory — Loadout
@@ -57,6 +57,6 @@
   <a href="https://malikoliver25.github.io/voidprotocol-labs/"><img src="https://img.shields.io/badge/Portfolio-voidprotocol--labs-38bdf8?style=flat&logo=vercel" alt="portfolio" /></a>
 </p>
 
-<p align="center">🏆 Achievements: 22 Repos · 6 Languages · Cloud Native · QA Automation · AI/Security</p>
+<p align="center">🏆 Achievements: Backend &amp; AI Engineer · MLOps &amp; AI Infrastructure · 22 Repos · 6 Languages</p>
 
 ![footer](https://capsule-render.vercel.app/api?type=waving&color=0:38bdf8,100:0f172a&height=120&section=footer&text=GG%20—%20Thanks%20for%20visiting!&fontSize=18&fontColor=ffffff&animation=fadeIn)
