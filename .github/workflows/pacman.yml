@@ -1,4 +1,4 @@
-name: Generate Pacman
+name: Generate Wizard Dungeon
 on:
   schedule:
     - cron: "0 */6 * * *"
@@ -22,11 +22,11 @@ jobs:
           DENSE_DAYS=$(gh api graphql -f query='query{user(login:"malikoliver25"){contributionsCollection{contributionCalendar{weeks{contributionDays{contributionCount}}}}}}' --jq '[.data.user.contributionsCollection.contributionCalendar.weeks[].contributionDays[].contributionCount | select(.>0)] | length' 2>/dev/null || echo "0")
           TOTAL=${TOTAL:-0}
           DENSE_DAYS=${DENSE_DAYS:-0}
-          if [ "$TOTAL" -le 50 ]; then DIFF=1; LABEL="EASY"; RATE=3
-          elif [ "$TOTAL" -le 150 ]; then DIFF=2; LABEL="NORMAL"; RATE=4
-          elif [ "$TOTAL" -le 300 ]; then DIFF=3; LABEL="HARD"; RATE=5
-          elif [ "$TOTAL" -le 500 ]; then DIFF=4; LABEL="EXPERT"; RATE=6
-          else DIFF=5; LABEL="NIGHTMARE"; RATE=7; fi
+          if [ "$TOTAL" -le 50 ]; then DIFF=1; LABEL="APPRENTICE"; RATE=3
+          elif [ "$TOTAL" -le 150 ]; then DIFF=2; LABEL="ADEPT"; RATE=4
+          elif [ "$TOTAL" -le 300 ]; then DIFF=3; LABEL="MAGE"; RATE=5
+          elif [ "$TOTAL" -le 500 ]; then DIFF=4; LABEL="ARCHMAGE"; RATE=6
+          else DIFF=5; LABEL="ARCHON"; RATE=7; fi
           echo "total=$TOTAL dense_days=$DENSE_DAYS diff=$DIFF label=$LABEL rate=$RATE"
           echo "total=$TOTAL" >> $GITHUB_OUTPUT
           echo "diff=$DIFF" >> $GITHUB_OUTPUT
@@ -36,23 +36,23 @@ jobs:
           echo "LABEL=$LABEL" >> $GITHUB_ENV
           echo "RATE=$RATE" >> $GITHUB_ENV
           echo "TOTAL=$TOTAL" >> $GITHUB_ENV
-      - name: Pick random themed maze
+      - name: Pick random wizard tower theme
         id: theme
         run: |
           set -e
-          # 6 themed mazes tied to quest repos — random rotation each run
+          # 6 wizard tower themes — random rotation each run (replaces pacman themes)
           THEMES=(
-            "CLOUD_NATIVE|☁️ Cloud Native Grid|#38bdf8"
-            "SENTINEL|🛡️ Sentinel Maze|#ef4444"
-            "AI_LAB|🤖 AI Infra Labyrinth|#a855f7"
-            "TASK_ORCH|⚙️ Task Orchestrator|#f59e0b"
-            "ARCADE|🎮 Arcade Arena|#10b981"
-            "QA_LAB|🎯 QA Arena|#06b6d4"
+            "ARCANE|🧙 Arcane Tower|#7c3aed"
+            "EMBER|🔥 Ember Forge|#ef4444"
+            "FROST|❄️ Frost Citadel|#06b6d4"
+            "NATURE|🌿 Verdant Glade|#10b981"
+            "SHADOW|🌑 Shadow Crypt|#64748b"
+            "STORM|⛈️ Storm Spire|#38bdf8"
           )
           PICK=$((RANDOM % ${#THEMES[@]}))
           ENTRY="${THEMES[$PICK]}"
           IFS='|' read -r THEME_ID THEME_NAME THEME_COLOR <<< "$ENTRY"
-          echo "Picked theme $PICK: $THEME_ID — $THEME_NAME — $THEME_COLOR"
+          echo "Picked wizard theme $PICK: $THEME_ID — $THEME_NAME — $THEME_COLOR"
           echo "id=$THEME_ID" >> $GITHUB_OUTPUT
           echo "name=$THEME_NAME" >> $GITHUB_OUTPUT
           echo "color=$THEME_COLOR" >> $GITHUB_OUTPUT
@@ -62,7 +62,7 @@ jobs:
       - uses: abozanona/pacman-contribution-graph@main
         with:
           github_user_name: malikoliver25
-      - name: Simulate random run — WIN or LOSE then RESTART (data-driven difficulty + themed maze)
+      - name: Reskin Pac-Man → Wizard + inject hybrid roguelike tower (contribution-seeded Floor 1 + 4 procedural)
         env:
           DIFF: ${{ steps.difficulty.outputs.diff }}
           LABEL: ${{ steps.difficulty.outputs.label }}
@@ -77,23 +77,79 @@ jobs:
           DARK="dist/pacman-contribution-graph-dark.svg"
           ls -la dist/ || mkdir -p dist
           DIFF=${DIFF:-3}
-          LABEL=${LABEL:-HARD}
+          LABEL=${LABEL:-MAGE}
           RATE=${RATE:-5}
           TOTAL=${TOTAL:-0}
-          THEME_NAME=${THEME_NAME:-"☁️ Cloud Native Grid"}
-          THEME_COLOR=${THEME_COLOR:-"#38bdf8"}
+          THEME_NAME=${THEME_NAME:-"🧙 Arcane Tower"}
+          THEME_COLOR=${THEME_COLOR:-"#7c3aed"}
+          # --- Build hybrid tower: Floor 1 = real contribution graph (animated), Floors 2-5 = procedural random ---
+          python3 - <<'PY'
+          import pathlib, random, re
+          w, h = 1166, 184
+          src = pathlib.Path("dist/pacman-contribution-graph.svg")
+          src_dark = pathlib.Path("dist/pacman-contribution-graph-dark.svg")
+          def build_tower(src_path, w=w, h=h):
+              svg_text = pathlib.Path(src_path).read_text() if src_path.exists() else ""
+              # Extract inner content and preserve animation metadata
+              m = re.search(r'<svg[^>]*>(.*)</svg>\s*$', svg_text, re.DOTALL)
+              inner1 = m.group(1) if m else svg_text
+              # Preserve metadata width/height
+              tower_h = h*5 + 20  # 5 floors + dividers
+              tower = f'<svg width="{w}" height="{tower_h}" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/>'
+              # Floor 1 — real contribution (keep as is, wrapped with label)
+              floors = []
+              floor1 = f'<g id="floor1"><text x="50%" y="14" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" font-weight="700" fill="#7c3aed">FLOOR 1 — CONTRIBUTION SEED — REAL DATA</text><g transform="translate(0,18)">{inner1}</g></g>'
+              floors.append(floor1)
+              # Floors 2-5 — procedural random mazes
+              for floor in range(2,6):
+                  cols, rows = 53, 7
+                  cell_w, cell_h = w//cols, h//rows
+                  inner = f'<g id="floor{floor}"><text x="50%" y="14" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#64748b">FLOOR {floor} — PROCEDURAL — SEED {random.randint(1000,9999)}</text>'
+                  # Random walls/dots
+                  for c in range(cols):
+                      for r in range(rows):
+                          x, y = c*cell_w+3, r*cell_h+22
+                          roll = random.random()
+                          if roll < 0.18:
+                              # wall — dark block
+                              inner += f'<rect x="{x}" y="{y}" width="{cell_w-6}" height="{cell_h-6}" rx="3" fill="#1e293b" stroke="#334155" stroke-width="0.6"/>'
+                          elif roll < 0.92:
+                              cx, cy = c*cell_w + cell_w//2, r*cell_h+22 + cell_h//2
+                              inner += f'<circle cx="{cx}" cy="{cy}" r="2.2" fill="#7c3aed" opacity="0.55"/>'
+                  # Static wizard + wraiths (ghosts reskinned as wraiths)
+                  inner += f'<text x="12" y="{h//2+22}" font-size="16">🧙</text><text x="{w-42}" y="{h//2+22}" font-size="11">👻👻👻👻</text>'
+                  inner += '</g>'
+                  floors.append(inner)
+              for i, inner in enumerate(floors):
+                  y_off = i*(h+4) + 2
+                  tower += f'<g transform="translate(0,{y_off})">{inner}</g>'
+                  if i < len(floors)-1:
+                      tower += f'<rect x="0" y="{y_off+h+4}" width="{w}" height="4" fill="#0f172a" opacity="0.9"/>'
+              tower += '</svg>'
+              return tower
+          # Overwrite both light/dark with tower versions (seed 0 = real, 1+ = random)
+          for p in [src, src_dark]:
+              if p.exists():
+                  tower_svg = build_tower(p)
+                  p.write_text(tower_svg)
+                  print(f"Built hybrid tower for {p} ({len(tower_svg)} bytes)")
+          PY
           ROLL=$((RANDOM % 2))
           inject_outcome() {
             local file="$1" outcome="$2"
             local banner_text banner_color
             if [ "$outcome" = "WIN" ]; then
-              banner_text="★ WIN — ${THEME_NAME} — LVL ${DIFF} ${LABEL} — ${TOTAL} dots — RESTARTING... ★"
-              banner_color="#FFED00"
-              sed -i 's/#FF0000/#2121FF/g; s/#FFB8DE/#2121FF/g; s/#00FFFF/#2121FF/g; s/#FFB852/#2121FF/g' "$file" || true
+              banner_text="🧙 ${THEME_NAME} — VICTORY — LVL ${DIFF} ${LABEL} — ${TOTAL} runes — RESTARTING... ★"
+              banner_color="#a78bfa"
+              # Wizard victory: wraiths become banished (pale) — tint ghosts to wizard color
+              sed -i 's/#FF0000/#a78bfa/g; s/#FFB8DE/#c4b5fd/g; s/#00FFFF/#ddd6fe/g; s/#FFB852/#ede9fe/g' "$file" || true
+              sed -i 's/#2121FF/#a78bfa/g' "$file" || true
+              # Pac-Man yellow -> wizard arcane purple
+              sed -i 's/#FFED00/#a78bfa/g; s/#FFA500/#7c3aed/g' "$file" || true
             else
-              banner_text="☠ GAME OVER — ${THEME_NAME} — LVL ${DIFF} ${LABEL} — RESTARTING... ☠"
-              banner_color="#FF0000"
-              sed -i 's/#FFED00/#FFA500/g' "$file" || true
+              banner_text="☠ ${THEME_NAME} — DEFEAT — LVL ${DIFF} ${LABEL} — RESTARTING... ☠"
+              banner_color="#ef4444"
+              sed -i 's/#FFED00/#64748b/g' "$file" || true
             fi
             python3 - <<PY "$file" "$banner_text" "$banner_color" "$RATE" "$DIFF" "$LABEL" "$THEME_NAME" "$THEME_COLOR"
           import sys, pathlib, re
@@ -108,19 +164,17 @@ jobs:
                   svg = re.sub(r'<durationMs>\d+</durationMs>', f'<durationMs>{new_dur}</durationMs>', svg)
           except Exception as e:
               print(f"Speed adjust failed: {e}")
-          # Theme tint: add subtle themed overlay behind maze (low opacity)
-          # Insert after background <rect ... fill="#ffffff"/>
           theme_overlay = f'<rect x="0" y="0" width="100%" height="100%" fill="{theme_color}" opacity="0.06"/>'
-          # Add theme overlay after first <rect width="100%" ...>
           svg = svg.replace('<rect width="100%" height="100%" fill="#ffffff"/>', f'<rect width="100%" height="100%" fill="#ffffff"/>{theme_overlay}', 1)
-          # Banners
-          banner = f'<g id="random-outcome"><rect x="10" y="95%" width="98%" height="22" rx="6" fill="#0f172a" stroke="{color}" stroke-width="1.2"/><text x="50%" y="97.5%" dominant-baseline="middle" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700" fill="{color}">{text}</text></g></svg>'
+          # Reskin pacman to wizard: replace yellow pacman with wizard purple in any remaining fills
+          # Banner
+          banner = f'<g id="random-outcome"><rect x="10" y="97%" width="98%" height="22" rx="6" fill="#0f172a" stroke="{color}" stroke-width="1.2"/><text x="50%" y="98.2%" dominant-baseline="middle" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" font-weight="700" fill="{color}">{text}</text></g></svg>'
           svg = svg.replace('</svg>', banner)
-          level_badge = f'<g id="level-badge"><rect x="78%" y="2%" width="20%" height="14" rx="4" fill="#0f172a" stroke="#38bdf8" stroke-width="1"/><text x="88%" y="6.5%" dominant-baseline="middle" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="7" font-weight="700" fill="#38bdf8">LVL {diff} {label}</text></g>'
-          theme_badge = f'<g id="theme-badge"><rect x="2%" y="2%" width="28%" height="14" rx="4" fill="#0f172a" stroke="{theme_color}" stroke-width="1"/><text x="16%" y="6.5%" dominant-baseline="middle" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="7" font-weight="700" fill="{theme_color}">{theme_name}</text></g>'
+          level_badge = f'<g id="level-badge"><rect x="76%" y="1.2%" width="22%" height="14" rx="4" fill="#0f172a" stroke="#a78bfa" stroke-width="1"/><text x="87%" y="5.2%" dominant-baseline="middle" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="7" font-weight="700" fill="#a78bfa">LVL {diff} {label}</text></g>'
+          theme_badge = f'<g id="theme-badge"><rect x="1.5%" y="1.2%" width="30%" height="14" rx="4" fill="#0f172a" stroke="{theme_color}" stroke-width="1"/><text x="16.5%" y="5.2%" dominant-baseline="middle" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="7" font-weight="700" fill="{theme_color}">{theme_name}</text></g>'
           svg = svg.replace('<g id="random-outcome">', theme_badge + level_badge + '<g id="random-outcome">')
           pathlib.Path(path).write_text(svg)
-          print(f"Injected {text} + LVL {diff} {label} theme {theme_name} {theme_color} rate {rate} into {path}")
+          print(f"Wizard reskin: {text} + LVL {diff} {label} theme {theme_name} {theme_color} rate {rate} -> {path}")
           PY
           }
           if [ -f "$SVG" ]; then
@@ -134,7 +188,7 @@ jobs:
             find dist -type f | head -20
             exit 1
           fi
-          echo "Random outcome roll: $ROLL (0=WIN 50%, 1=LOSE 50%) diff=$DIFF label=$LABEL rate=$RATE total=$TOTAL theme=$THEME_NAME $THEME_COLOR"
+          echo "Wizard roll: $ROLL (0=VICTORY 50%, 1=DEFEAT 50%) diff=$DIFF label=$LABEL rate=$RATE total=$TOTAL theme=$THEME_NAME $THEME_COLOR"
       - name: Commit to output branch
         uses: crazy-max/ghaction-github-pages@v4
         with:

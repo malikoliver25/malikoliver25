@@ -45,7 +45,7 @@
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/malikoliver25/malikoliver25/output/pacman-contribution-graph-dark.svg" />
     <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/malikoliver25/malikoliver25/output/pacman-contribution-graph.svg" />
-    <img alt="pacman contribution graph with four ghosts — random win/lose run then restart" src="https://raw.githubusercontent.com/malikoliver25/malikoliver25/output/pacman-contribution-graph.svg" />
+    <img alt="wizard dungeon — 5-floor roguelike tower: FLOOR 1 contribution-seeded + FLOORS 2-5 procedural, 50/50 VICTORY/DEFEAT" src="https://raw.githubusercontent.com/malikoliver25/malikoliver25/output/pacman-contribution-graph.svg" />
   </picture>
 </p>
 
