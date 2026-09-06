@@ -12,36 +12,97 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
+      - name: Compute data-driven maze difficulty
+        id: difficulty
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          # Fetch total contributions last year + commit intensity via GraphQL
+          # Fallback to defaults if API fails (e.g., rate limit)
+          TOTAL=$(gh api graphql -f query='query{user(login:"malikoliver25"){contributionsCollection{contributionCalendar{totalContributions}} stability: contributionsCollection{contributionCalendar{weeks{contributionDays{contributionCount}}}}}}' --jq '.data.user.contributionsCollection.contributionCalendar.totalContributions' 2>/dev/null || echo "0")
+          # Count non-zero days as activity density proxy
+          DENSE_DAYS=$(gh api graphql -f query='query{user(login:"malikoliver25"){contributionsCollection{contributionCalendar{weeks{contributionDays{contributionCount}}}}}}' --jq '[.data.user.contributionsCollection.contributionCalendar.weeks[].contributionDays[].contributionCount | select(.>0)] | length' 2>/dev/null || echo "0")
+          TOTAL=${TOTAL:-0}
+          DENSE_DAYS=${DENSE_DAYS:-0}
+          # Difficulty 1-5: based on total + density. Scale for low-activity early profile:
+          # 0-50=1 Easy, 51-150=2, 151-300=3, 301-500=4, 501+=5
+          if [ "$TOTAL" -le 50 ]; then DIFF=1; LABEL="EASY"; RATE=3
+          elif [ "$TOTAL" -le 150 ]; then DIFF=2; LABEL="NORMAL"; RATE=4
+          elif [ "$TOTAL" -le 300 ]; then DIFF=3; LABEL="HARD"; RATE=5
+          elif [ "$TOTAL" -le 500 ]; then DIFF=4; LABEL="EXPERT"; RATE=6
+          else DIFF=5; LABEL="NIGHTMARE"; RATE=7; fi
+          # Ghost speed scales with difficulty (frameRate 3-7); duration inverse
+          # Maze density label also considers dense days
+          echo "total=$TOTAL dense_days=$DENSE_DAYS diff=$DIFF label=$LABEL rate=$RATE"
+          echo "total=$TOTAL" >> $GITHUB_OUTPUT
+          echo "diff=$DIFF" >> $GITHUB_OUTPUT
+          echo "label=$LABEL" >> $GITHUB_OUTPUT
+          echo "rate=$RATE" >> $GITHUB_OUTPUT
+          echo "DIFF=$DIFF" >> $GITHUB_ENV
+          echo "LABEL=$LABEL" >> $GITHUB_ENV
+          echo "RATE=$RATE" >> $GITHUB_ENV
+          echo "TOTAL=$TOTAL" >> $GITHUB_ENV
       - uses: abozanona/pacman-contribution-graph@main
         with:
           github_user_name: malikoliver25
-      - name: Simulate random run — WIN or LOSE then RESTART
+      - name: Simulate random run — WIN or LOSE then RESTART (data-driven difficulty)
+        env:
+          DIFF: ${{ steps.difficulty.outputs.diff }}
+          LABEL: ${{ steps.difficulty.outputs.label }}
+          RATE: ${{ steps.difficulty.outputs.rate }}
+          TOTAL: ${{ steps.difficulty.outputs.total }}
         run: |
           set -e
           SVG="dist/pacman-contribution-graph.svg"
           DARK="dist/pacman-contribution-graph-dark.svg"
           ls -la dist/ || mkdir -p dist
+          DIFF=${DIFF:-3}
+          LABEL=${LABEL:-HARD}
+          RATE=${RATE:-5}
+          TOTAL=${TOTAL:-0}
           ROLL=$((RANDOM % 2))
+          # Helper to inject outcome banner, difficulty, and ghost speed scaling
           inject_outcome() {
             local file="$1" outcome="$2"
             local banner_text banner_color
             if [ "$outcome" = "WIN" ]; then
-              banner_text="★ WIN — LEVEL CLEAR! RESTARTING... ★"
+              banner_text="★ WIN — LVL ${DIFF} ${LABEL} — ${TOTAL} dots — RESTARTING... ★"
               banner_color="#FFED00"
               sed -i 's/#FF0000/#2121FF/g; s/#FFB8DE/#2121FF/g; s/#00FFFF/#2121FF/g; s/#FFB852/#2121FF/g' "$file" || true
             else
-              banner_text="☠ GAME OVER — GHOSTS WIN! RESTARTING... ☠"
+              banner_text="☠ GAME OVER — LVL ${DIFF} ${LABEL} — RESTARTING... ☠"
               banner_color="#FF0000"
               sed -i 's/#FFED00/#FFA500/g' "$file" || true
             fi
-            python3 - <<PY "$file" "$banner_text" "$banner_color"
-          import sys, pathlib
-          path, text, color = sys.argv[1], sys.argv[2], sys.argv[3]
+            python3 - <<PY "$file" "$banner_text" "$banner_color" "$RATE" "$DIFF" "$LABEL"
+          import sys, pathlib, re
+          path, text, color, rate, diff, label = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5], sys.argv[6]
           svg = pathlib.Path(path).read_text()
+          # Scale ghost/Pac-Man speed: adjust frameRate and durationMs in metadata
+          # Higher diff = faster (frameRate up, duration down). Base 5 → RATE.
+          try:
+              # frameRate: <frameRate>5</frameRate> → RATE
+              svg = re.sub(r'<frameRate>\d+</frameRate>', f'<frameRate>{rate}</frameRate>', svg)
+              # durationMs ~ 43600 /5 * RATE  → scale
+              m = re.search(r'<durationMs>(\d+)</durationMs>', svg)
+              if m:
+                  base = int(m.group(1))
+                  # assume base was for rate 5, scale inversely: faster rate = shorter duration
+                  new_dur = int(base * 5 / int(rate))
+                  svg = re.sub(r'<durationMs>\d+</durationMs>', f'<durationMs>{new_dur}</durationMs>', svg)
+          except Exception as e:
+              print(f"Speed adjust failed: {e}")
+          # Inject difficulty + outcome banner at bottom
           banner = f'<g id="random-outcome"><rect x="10" y="95%" width="98%" height="22" rx="6" fill="#0f172a" stroke="{color}" stroke-width="1.2"/><text x="50%" y="97.5%" dominant-baseline="middle" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700" fill="{color}">{text}</text></g></svg>'
           svg = svg.replace('</svg>', banner)
+          # Also inject top level badge showing difficulty
+          level_badge = f'<g id="level-badge"><rect x="78%" y="2%" width="20%" height="14" rx="4" fill="#0f172a" stroke="#38bdf8" stroke-width="1"/><text x="88%" y="6.5%" dominant-baseline="middle" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="7" font-weight="700" fill="#38bdf8">LVL {diff} {label}</text></g>'
+          # insert before first </g> chain or before </svg> if not found — put after banner insertion point before final </svg>
+          # Place level badge before outcome banner's closing
+          svg = svg.replace('<g id="random-outcome">', level_badge + '<g id="random-outcome">')
           pathlib.Path(path).write_text(svg)
-          print(f"Injected {text} into {path}")
+          print(f"Injected {text} + LVL {diff} {label} rate {rate} into {path}")
           PY
           }
           if [ -f "$SVG" ]; then
@@ -55,7 +116,7 @@ jobs:
             find dist -type f | head -20
             exit 1
           fi
-          echo "Random outcome roll: $ROLL (0=WIN 50%, 1=LOSE 50%)"
+          echo "Random outcome roll: $ROLL (0=WIN 50%, 1=LOSE 50%) diff=$DIFF label=$LABEL rate=$RATE total=$TOTAL"
       - name: Commit to output branch
         uses: crazy-max/ghaction-github-pages@v4
         with:
