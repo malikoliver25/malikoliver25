@@ -108,17 +108,11 @@ jobs:
                   svg = re.sub(r'<durationMs>\d+</durationMs>', f'<durationMs>{new_dur}</durationMs>', svg)
           except Exception as e:
               print(f"Speed adjust failed: {e}")
-          # Theme tint: add subtle themed overlay behind maze (low opacity)
-          # Insert after background <rect ... fill="#ffffff"/>
+          # Theme tint: subtle themed overlay (no banner per user request — removed WIN/RESTARTING and GAME OVER banners)
           theme_overlay = f'<rect x="0" y="0" width="100%" height="100%" fill="{theme_color}" opacity="0.06"/>'
-          # Add theme overlay after first <rect width="100%" ...>
           svg = svg.replace('<rect width="100%" height="100%" fill="#ffffff"/>', f'<rect width="100%" height="100%" fill="#ffffff"/>{theme_overlay}', 1)
-          # Banners only — no theme/level text, no top badges per user request (removed AI Infra Labyrinth + LVL 3 HARD)
-          banner = f'<g id="random-outcome"><rect x="10" y="95%" width="98%" height="22" rx="6" fill="#0f172a" stroke="{color}" stroke-width="1.2"/><text x="50%" y="97.5%" dominant-baseline="middle" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700" fill="{color}">{text}</text></g></svg>'
-          svg = svg.replace('</svg>', banner)
-          # Theme tint kept subtle (background wash), but no theme/level badges
           pathlib.Path(path).write_text(svg)
-          print(f"Injected {text} rate {rate} into {path} (theme {theme_name} tint kept, badges removed)")
+          print(f"Toned {theme_name} rate {rate} -> {path} ({text.split()[1] if len(text.split())>1 else text})")
           PY
           }
           if [ -f "$SVG" ]; then
