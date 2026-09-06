@@ -1,4 +1,4 @@
-![header](https://capsule-render.vercel.app/api?type=waving&color=0:0f172a,100:38bdf8&height=220&section=header&text=malikoliver25&fontSize=48&fontColor=ffffff&animation=fadeIn&desc=Backend%20%26%20AI%20Engineer%20%E2%80%94%20MLOps%20%26%20AI%20Infrastructure&descAlignY=60)
+![](https://capsule-render.vercel.app/api?type=waving&color=0:0f172a,100:38bdf8&height=220&section=header&text=malikoliver25&fontSize=48&fontColor=ffffff&animation=fadeIn&desc=Backend%20%26%20AI%20Engineer%20%E2%80%94%20MLOps%20%26%20AI%20Infrastructure&descAlignY=60)
 
 [![Typing SVG](https://readme-typing-svg.demolab.com?font=JetBrains+Mono&size=22&pause=1000&color=38BDF8&center=true&vCenter=true&width=700&lines=Backend%20%26%20AI%20Engineer%20%E2%80%94%20MLOps%20%26%20AI%20Infrastructure;Scalable%20AI%20systems%20%26%20backend%20platforms;Press%20%E2%96%B6%20to%20explore%20my%20quests)](https://git.io/typing-svg)
 
